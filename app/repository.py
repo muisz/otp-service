@@ -4,11 +4,8 @@ from typing import Annotated, Any, Union
 
 from .schema import OTPRequest
 from .model import OTP
-from .dependencies import get_database_connection
-from .utils import get_otp_code, get_session_code
-
 class OTPRepository:
-    def create(self, otp: OTPRequest) -> OTP:
+    def create(self, otp: OTP) -> OTP:
         raise NotImplementedError()
     
     def get_otp(self, code: str, session_code: str) -> Union[OTP, None]:
@@ -21,13 +18,11 @@ class DbRepository(OTPRepository):
     def __init__(self, db):
         self.db = db
     
-    def create(self, otp: OTPRequest) -> OTP:
+    def create(self, otp: OTP) -> OTP:
         with self.db.cursor() as cursor:
-            code = get_otp_code()
-            session_code = get_session_code()
-            cursor.execute("insert into otps (code, destination, session_code, is_active) values (%s, %s, %s, %s);", [code, otp.destination, session_code, True])
+            cursor.execute("insert into otps (code, destination, session_code, is_active) values (%s, %s, %s, %s);", [otp.code, otp.destination, otp.session_code, True])
             self.db.commit()
-            return OTP(code=code, destination=otp.destination, session_code=session_code, is_active=True)
+            return otp
     
     def get_otp(self, code: str, session_code: str) -> Union[OTP, None]:
         with self.db.cursor() as cursor:

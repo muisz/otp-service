@@ -2,11 +2,11 @@ import environ
 from fastapi import FastAPI, Depends, status, Response
 from typing import Annotated, Any
 
-from .dependencies import get_database_connection
-from .schema import OTPRequest, OTPCreated, OTPCheck, OTPStatus, Error
-from .model import OTP
-from .repository import DbRepository
-from .service import OTPService
+from .app.dependencies import get_database_connection
+from .app.schema import OTPRequest, OTPCreated, OTPCheck, OTPStatus, Error
+from .app.model import OTP
+from .app.repository import DbRepository
+from .app.service import OTPService
 
 ENV = environ.Env()
 environ.Env.read_env('.env')

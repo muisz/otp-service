@@ -4,13 +4,20 @@ from .repository import OTPRepository
 from .model import OTP
 from .schema import OTPRequest
 from .exception import ServiceError
+from .utils import get_otp_code, get_session_code
 
 class OTPService:
     def __init__(self, repository: OTPRepository):
         self.repository = repository
     
     def create_otp(self, otp: OTPRequest) -> OTP:
-        return self.repository.create(otp)
+        new_otp = OTP(
+            code=get_otp_code(),
+            destination=otp.destination,
+            session_code=get_session_code(),
+            is_active=True,
+        )
+        return self.repository.create(new_otp)
     
     def get_otp(self, code: str, session_code: str) -> Union[OTP, None]:
         otp = self.repository.get_otp(code, session_code)
